@@ -48,7 +48,7 @@ bone_length = 38.73
 
 [node name="Bone2D3" type="Bone2D" parent="Icon/Skeleton2D"]
 rotation = -3.135798
-scale = Vector2(0.99999994, 0.99999994)
+scale = Vector2(0.99999976, 0.99999976)
 rest = Transform2D(-0.9999832, -0.00579458, 0.00579458, -0.9999832, 0, 0)
 script = ExtResource("2_0bhed")
 
@@ -188,3 +188,6 @@ metadata/_custom_type_script = "uid://btk37mka80rfg"
 
 [node name="Marker2D4" type="Marker2D" parent="Icon/CCDIK4"]
 position = Vector2(-75, -75)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+limit_enabled = false
