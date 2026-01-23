@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="2DBones101"
+config/name="godot-learn-101"
 run/main_scene="uid://ddony6nb0voa1"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
