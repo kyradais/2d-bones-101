@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cqc8cosfmdpy3"]
 
 [ext_resource type="Texture2D" uid="uid://cw2okvn5kfaqf" path="res://icon.svg" id="1_5hfv0"]
-[ext_resource type="Script" uid="uid://qxrg0qcjx50w" path="res://demo.gd" id="1_c6xj6"]
+[ext_resource type="Script" uid="uid://qxrg0qcjx50w" path="res://bones_and_animation/bones_demo.gd" id="1_c6xj6"]
 [ext_resource type="Script" uid="uid://dv0jwy6qemn6v" path="res://addons/bone_ik/nodes/bone_ik.gd" id="2_0bhed"]
 [ext_resource type="Script" uid="uid://btk37mka80rfg" path="res://addons/bone_ik/nodes/ccd_ik.gd" id="3_m0rpm"]
 

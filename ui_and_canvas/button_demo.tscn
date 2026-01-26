@@ -1,9 +1,9 @@
 [gd_scene load_steps=2 format=3 uid="uid://ddony6nb0voa1"]
 
-[ext_resource type="Script" uid="uid://1l84xbb5hi6k" path="res://demo2.gd" id="1_na5il"]
+[ext_resource type="Script" uid="uid://1l84xbb5hi6k" path="res://ui_and_canvas/button_demo.gd" id="1_5yqfu"]
 
 [node name="Demo2" type="Node2D"]
-script = ExtResource("1_na5il")
+script = ExtResource("1_5yqfu")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 limit_enabled = false
