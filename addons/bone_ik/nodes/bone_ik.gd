@@ -19,9 +19,10 @@ signal child_bone_replaced(previous: BoneIK, current: BoneIK)
 		show_bone = s
 		_update_shapes()
 
-## If [code]true[/code], it will attempt to use the first child bone to discover length and angle.[br]
-## In case no child bone exist or it's [code]false[/code], [member bone_length] and [member bone_angle]
-## will be used.
+## If [code]true[/code], it will attempt to use the first child bone to discover length and angle.
+## [br][br]
+## In case no child bone exist or it's [code]false[/code], it will use and show
+## a bone with [member bone_length] and [member bone_angle].
 @export var autocalculate_length_and_angle: bool = true:
 	set(a):
 		autocalculate_length_and_angle = a
@@ -69,10 +70,16 @@ var _bone_shape: Polygon2D
 var _bone_outline_shape: Polygon2D
 
 
+func _editor():
+	if Engine.is_editor_hint():
+		return Engine.get_singleton("EditorInterface")
+	return null
+
+
 func _ready() -> void:
 	set_notify_transform(true)
 	set_notify_local_transform(true)
-	
+
 	_bone_shape = _create_bone_shape()
 	_bone_outline_shape = _create_bone_outline_shape()
 	
@@ -80,15 +87,17 @@ func _ready() -> void:
 	# paste them throught the editor.
 	add_child(_bone_shape, false, Node.INTERNAL_MODE_BACK)
 	add_child(_bone_outline_shape, false, Node.INTERNAL_MODE_BACK)
-	
-	if EditorInterface.has_method("get_selection"):
-		EditorInterface.get_selection().selection_changed.connect(_update_shapes)
+
+	var editor = _editor()
+	if editor and editor.has_method("get_selection"):
+		editor.get_selection().selection_changed.connect(_update_shapes)
 
 
 func _exit_tree() -> void:
-	if EditorInterface.has_method("get_selection"):
-		if EditorInterface.get_selection().selection_changed.is_connected(_update_shapes):
-			EditorInterface.get_selection().selection_changed.disconnect(_update_shapes)
+	var editor = _editor()
+	if editor and editor.has_method("get_selection"):
+		if editor.get_selection().selection_changed.is_connected(_update_shapes):
+			editor.get_selection().selection_changed.disconnect(_update_shapes)
 
 
 func _notification(what: int) -> void:
@@ -202,7 +211,7 @@ func _start_listen_child_bone(child_bone: BoneIK) -> void:
 	if not child_bone.transform_changed.is_connected(_update_shapes):
 		child_bone.transform_changed.connect(_update_shapes)
 
-
+# This got deleted before, i restored so it can be reviewed again. (Ikky)
 func _stop_listen_child_bone(child_bone: BoneIK) -> void:
 	if not child_bone:
 		return
@@ -294,21 +303,18 @@ func _decrease_bone_shapes() -> void:
 
 
 func _update_shape(bone_shape: Polygon2D, bone_outline_shape: Polygon2D, child_bone: BoneIK) -> void:
-	if not bone_shape:
-		return
-	
-	if not bone_outline_shape:
-		return
-	
-	if not EditorInterface.has_method("get_editor_settings"):
-		return
-	
+
 	if not show_bone:
 		bone_shape.polygon = []
 		bone_outline_shape.polygon = []
 		return
-	
-	var settings = EditorInterface.get_editor_settings()
+
+	var editor = _editor()
+	if not editor:
+		return
+
+	var settings = editor.get_editor_settings()
+
 	var bone_width: float = settings.get_setting("editors/2d/bone_width")
 	var bone_outline_width: float = settings.get_setting("editors/2d/bone_outline_size")
 	var bone_direction: Vector2
@@ -325,7 +331,7 @@ func _update_shape(bone_shape: Polygon2D, bone_outline_shape: Polygon2D, child_b
 	var bone_normal = bone_direction.rotated(PI/2).normalized() * bone_width
 	
 	bone_shape.polygon = [
-		Vector2(0, 0),
+		Vector2.ZERO,
 		bone_direction * 0.2 + bone_normal,
 		bone_direction,
 		bone_direction * 0.2 - bone_normal,
@@ -345,25 +351,14 @@ func _update_shape(bone_shape: Polygon2D, bone_outline_shape: Polygon2D, child_b
 
 
 func _update_shape_color(bone_shape: Polygon2D, bone_outline_shape: Polygon2D) -> void:
-	if not bone_shape:
+
+	var editor = _editor()
+	if not editor:
 		return
-	
-	if not bone_outline_shape:
-		return
-	
-	if not EditorInterface.has_method("get_editor_settings"):
-		return
-	
-	if not EditorInterface.has_method("get_selection"):
-		return
-	
-	if not show_bone:
-		return
-	
-	bone_shape.self_modulate = self_modulate
-	bone_outline_shape.self_modulate = self_modulate
-	
-	var editor_settings = EditorInterface.get_editor_settings()
+
+	var editor_settings = editor.get_editor_settings()
+	var editor_selection = editor.get_selection()
+
 	var bone_ik_color: Color = editor_settings.get_setting("editors/2d/bone_ik_color")
 	var bone_color1: Color = editor_settings.get_setting("editors/2d/bone_color1")
 	var bone_color2: Color = editor_settings.get_setting("editors/2d/bone_color2")
@@ -373,17 +368,16 @@ func _update_shape_color(bone_shape: Polygon2D, bone_outline_shape: Polygon2D) -
 			bone_ik_color,
 			bone_ik_color,
 			bone_ik_color,
-			bone_ik_color,
+			bone_ik_color
 		]
 	else:
 		bone_shape.vertex_colors = [
 			bone_color1,
 			bone_color2,
 			bone_color1,
-			bone_color2,
+			bone_color2
 		]
-	
-	var editor_selection = EditorInterface.get_selection()
+
 	var bone_outline_color: Color = editor_settings.get_setting("editors/2d/bone_outline_color")
 	var bone_selected_color: Color = editor_settings.get_setting("editors/2d/bone_selected_color")
 	
@@ -394,7 +388,7 @@ func _update_shape_color(bone_shape: Polygon2D, bone_outline_shape: Polygon2D) -
 			bone_selected_color,
 			bone_selected_color,
 			bone_selected_color,
-			bone_selected_color,
+			bone_selected_color
 		]
 	else:
 		bone_outline_shape.vertex_colors = [
@@ -403,5 +397,5 @@ func _update_shape_color(bone_shape: Polygon2D, bone_outline_shape: Polygon2D) -
 			bone_outline_color,
 			bone_outline_color,
 			bone_outline_color,
-			bone_outline_color,
+			bone_outline_color
 		]
